@@ -4,11 +4,9 @@ import {
     Button,
     Card,
     CardContent, Checkbox,
-    FormControl,
-    FormGroup, Grid,
+    Grid,
     Input,
     InputLabel,
-    OutlinedInput, Radio,
     Typography
 } from "@mui/material";
 import {apiCall} from "../service";
@@ -45,10 +43,8 @@ const Login =()=> {
         navigate("/")
     }
     const getValue =(e)=> {
-        console.log({[e.target.name]: e.target.value})
         setInputValue({...inputValue, [e.target.name]: e.target.type === "checkbox" ? e.target.checked: e.target.value})
     }
-    console.log(inputValue);
     return(
         <>
             <Card variant="outlined" className={"login-card"}>

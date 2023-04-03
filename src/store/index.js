@@ -8,4 +8,8 @@ export default configureStore({
         dateData: dateRangeSlice,
 
     },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false,
+        }),
 })

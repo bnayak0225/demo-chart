@@ -9,7 +9,7 @@ import {
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
-import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
+import { DateRangePicker } from '@mui/x-date-pickers-pro';
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc'
 import Loading from "./Loading";
@@ -20,9 +20,14 @@ import TableChart from "./Table";
 import BarChart from "./Bar";
 import PieChart from "./Pie";
 import {useNavigate} from "react-router-dom";
+import { SingleInputDateRangeField } from '@mui/x-date-pickers-pro/SingleInputDateRangeField';
+import {getUTC} from "../service";
 dayjs.extend(utc)
 const Dashboard = () => {
     const [date, setDate] = useState([])
+    const [prevDate, setPrevDate] = useState([])
+    const [calenderClosed, setCalenderClosed] = useState(true)
+
     const [minDate, setMinDate] = useState(null)
     const [maxDate, setMaxDate] = useState(null)
     const [showDashboard, setShowDashboard] = useState(false)
@@ -38,15 +43,17 @@ const Dashboard = () => {
             setMaxDate(dateRange[1])
             setMinDate(dateRange[0])
             setDate(dateRange)
-
         }
     }, [dateRange])
 
     useEffect(()=> {
-        if(date.length > 0){
+        if(calenderClosed === true && date.length > 0 &&
+            (!prevDate[0] || getUTC(date[0]) !== getUTC(prevDate[0]) || getUTC(date[1]) !== getUTC(prevDate[1]))
+        ){
+            setPrevDate(date)
             dispatch(fetchChart(date))
         }
-    }, [date])
+    }, [date, calenderClosed])
 
     return(
         <>
@@ -62,7 +69,7 @@ const Dashboard = () => {
             <div style={{paddingTop: "40px"}}>
                 <Container>
                     <Grid container spacing={2}>
-                        <Grid item xs="12">
+                        <Grid item xs={12}>
                             {minDate && maxDate &&
                                 <Card>
                                     <CardContent>
@@ -70,21 +77,24 @@ const Dashboard = () => {
                                             Select date
                                         </Typography>
                                         <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                            <DemoContainer components={['DateRangePicker']}>
                                                 <DateRangePicker
+                                                    disableFuture={false}
                                                     value={date}
                                                     localeText={{start: 'Check-in', end: 'Check-out'}}
                                                     maxDate={maxDate}
                                                     minDate={minDate}
-                                                    onChange={(value)=> setDate(value)}
+                                                    onChange={(value)=> {
+                                                        setDate(value)
+                                                    }}
+                                                    onOpen={()=> setCalenderClosed(false)}
+                                                    onClose={()=> setCalenderClosed(true)}
                                                 />
-                                            </DemoContainer>
                                         </LocalizationProvider>
                                     </CardContent>
                                 </Card>
                             }
                         </Grid>
-                        {!showDashboard && <Grid item xs="12" align={"center"} style={{padding: "50px 0 50px 0"}}>
+                        {!showDashboard && <Grid item xs={12} align={"center"} style={{padding: "50px 0 50px 0"}}>
                             <Button color={"primary"} variant="outlined" onClick={()=>setShowDashboard(true)}>
                                 View Dashboard
                             </Button>
@@ -112,7 +122,7 @@ const Dashboard = () => {
                                     </Card>
                                 </Grid>}
                                 {chartDetail.pieData && <Grid item xs={12}>
-                                    <Card xs={{marginBottom: "40px"}}>
+                                    <Card sx={{marginBottom: "40px"}}>
                                         <CardContent>
                                             <Typography variant="h4" component="h4" className={"header"}>
                                                 Pie Chart
