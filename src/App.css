@@ -1,0 +1,22 @@
+body {
+    min-height: 100vh;
+    background-color: #ededed;
+}
+.login-card {
+    width: 400px;
+    position: fixed;
+    transform: translateY(-50%);
+    top: 50%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    border-radius: 10px!important;
+    overflow: hidden;
+}
+.header {
+    margin-bottom: 18px!important;
+}
+.inputLabel {
+    display: block;
+    margin-bottom: 10px;
+}
